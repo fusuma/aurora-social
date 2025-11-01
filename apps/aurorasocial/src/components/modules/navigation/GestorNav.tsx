@@ -15,6 +15,7 @@ import { usePathname } from "next/navigation";
 const navItems = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/equipe", label: "Equipe" },
+  { href: "/relatorios", label: "Relatórios" },
 ];
 
 export function GestorNav() {
