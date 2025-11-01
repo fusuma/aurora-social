@@ -230,4 +230,412 @@ export const citizensRouter = router({
         ctx.session.user.id
       );
     }),
+
+  /**
+   * Create new citizen profile
+   * TÉCNICO and GESTOR access
+   * Story 2.4: Create/Edit Profile
+   *
+   * - CPF uniqueness validation per tenant
+   * - Auto-create Family if responsible
+   * - Tenant isolation (NFR2)
+   * - Audit trail (NFR5)
+   */
+  createCitizen: protectedProcedure
+    .input(
+      z.object({
+        // Individuo fields
+        nomeCompleto: z.string().min(3, "Nome deve ter ao menos 3 caracteres"),
+        cpf: z
+          .string()
+          .regex(/^\d{11}$/, "CPF deve conter exatamente 11 dígitos")
+          .transform((val) => val.replace(/\D/g, "")),
+        dataNascimento: z.coerce.date(),
+        sexo: z.enum(["MASCULINO", "FEMININO", "OUTRO"]),
+        nomeMae: z.string().optional(),
+        nis: z
+          .string()
+          .regex(/^\d{11}$/, "NIS deve conter exatamente 11 dígitos")
+          .optional()
+          .transform((val) => (val ? val.replace(/\D/g, "") : undefined)),
+        rg: z.string().optional(),
+        tituloEleitor: z.string().optional(),
+        carteiraTrabalho: z.string().optional(),
+
+        // Family fields (optional - only if creating as responsavel)
+        createAsResponsavel: z.boolean().default(false),
+        endereco: z.string().optional(),
+        rendaFamiliarTotal: z.number().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      return await withTenantContext(
+        ctx.session.user.tenantId,
+        async () => {
+          const { createAsResponsavel, endereco, rendaFamiliarTotal, ...individuoData } = input;
+
+          // Check CPF uniqueness within tenant
+          const existingCitizen = await ctx.prisma.individuo.findUnique({
+            where: {
+              tenantId_cpf: {
+                tenantId: ctx.session.user.tenantId,
+                cpf: individuoData.cpf,
+              },
+            },
+          });
+
+          if (existingCitizen) {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: `CPF ${individuoData.cpf} já está cadastrado no sistema.`,
+            });
+          }
+
+          // Create citizen and optionally family in transaction
+          const result = await ctx.prisma.$transaction(async (tx) => {
+            // Create Individuo
+            const individuo = await tx.individuo.create({
+              data: {
+                ...individuoData,
+                tenantId: ctx.session.user.tenantId,
+                createdBy: ctx.session.user.id,
+              },
+            });
+
+            // If creating as responsavel, create Family too
+            if (createAsResponsavel) {
+              const familia = await tx.familia.create({
+                data: {
+                  tenantId: ctx.session.user.tenantId,
+                  responsavelFamiliarId: individuo.id,
+                  endereco: endereco || "",
+                  rendaFamiliarTotal: rendaFamiliarTotal ? rendaFamiliarTotal : null,
+                  createdBy: ctx.session.user.id,
+                },
+              });
+
+              // Add responsavel to family composition
+              await tx.composicaoFamiliar.create({
+                data: {
+                  familiaId: familia.id,
+                  individuoId: individuo.id,
+                  parentesco: "RESPONSAVEL",
+                },
+              });
+
+              return { individuo, familia };
+            }
+
+            return { individuo, familia: null };
+          });
+
+          return result;
+        },
+        ctx.session.user.id
+      );
+    }),
+
+  /**
+   * Update citizen profile
+   * TÉCNICO and GESTOR access
+   * Story 2.4: Create/Edit Profile
+   *
+   * - Update Individuo data
+   * - CPF uniqueness validation (if changed)
+   * - Audit trail via updatedAt
+   * - Tenant isolation
+   */
+  updateCitizen: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().cuid(),
+        nomeCompleto: z.string().min(3, "Nome deve ter ao menos 3 caracteres"),
+        cpf: z
+          .string()
+          .regex(/^\d{11}$/, "CPF deve conter exatamente 11 dígitos")
+          .transform((val) => val.replace(/\D/g, "")),
+        dataNascimento: z.coerce.date(),
+        sexo: z.enum(["MASCULINO", "FEMININO", "OUTRO"]),
+        nomeMae: z.string().optional(),
+        nis: z
+          .string()
+          .regex(/^\d{11}$/, "NIS deve conter exatamente 11 dígitos")
+          .optional()
+          .transform((val) => (val ? val.replace(/\D/g, "") : undefined)),
+        rg: z.string().optional(),
+        tituloEleitor: z.string().optional(),
+        carteiraTrabalho: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      return await withTenantContext(
+        ctx.session.user.tenantId,
+        async () => {
+          const { id, ...updateData } = input;
+
+          // Verify citizen exists and belongs to tenant
+          const existingCitizen = await ctx.prisma.individuo.findUnique({
+            where: {
+              id,
+              tenantId: ctx.session.user.tenantId,
+            },
+          });
+
+          if (!existingCitizen) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Cidadão não encontrado",
+            });
+          }
+
+          // If CPF changed, check uniqueness
+          if (updateData.cpf !== existingCitizen.cpf) {
+            const cpfExists = await ctx.prisma.individuo.findUnique({
+              where: {
+                tenantId_cpf: {
+                  tenantId: ctx.session.user.tenantId,
+                  cpf: updateData.cpf,
+                },
+              },
+            });
+
+            if (cpfExists) {
+              throw new TRPCError({
+                code: "CONFLICT",
+                message: `CPF ${updateData.cpf} já está cadastrado no sistema.`,
+              });
+            }
+          }
+
+          // Update citizen (updatedAt is auto-managed by Prisma)
+          const updatedCitizen = await ctx.prisma.individuo.update({
+            where: {
+              id,
+              tenantId: ctx.session.user.tenantId,
+            },
+            data: updateData,
+          });
+
+          return updatedCitizen;
+        },
+        ctx.session.user.id
+      );
+    }),
+
+  /**
+   * Add family member to existing family
+   * TÉCNICO and GESTOR access
+   * Story 2.4: Create/Edit Profile
+   *
+   * - Link existing Individuo to Familia
+   * - Or create new Individuo and link
+   * - Validate both familia and individuo belong to tenant
+   */
+  addFamilyMember: protectedProcedure
+    .input(
+      z.object({
+        familiaId: z.string().cuid(),
+        individuoId: z.string().cuid().optional(), // If linking existing
+        parentesco: z.enum([
+          "RESPONSAVEL",
+          "CONJUGE",
+          "FILHO",
+          "ENTEADO",
+          "NETO",
+          "PAI_MAE",
+          "SOGRO_SOGRA",
+          "IRMAO_IRMA",
+          "GENRO_NORA",
+          "OUTRO",
+        ]),
+        // If creating new member
+        newMember: z
+          .object({
+            nomeCompleto: z.string().min(3),
+            cpf: z.string().regex(/^\d{11}$/),
+            dataNascimento: z.coerce.date(),
+            sexo: z.enum(["MASCULINO", "FEMININO", "OUTRO"]),
+            nomeMae: z.string().optional(),
+            nis: z
+              .string()
+              .regex(/^\d{11}$/)
+              .optional(),
+          })
+          .optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      return await withTenantContext(
+        ctx.session.user.tenantId,
+        async () => {
+          const { familiaId, individuoId, newMember, parentesco } = input;
+
+          // Verify familia exists and belongs to tenant
+          const familia = await ctx.prisma.familia.findUnique({
+            where: {
+              id: familiaId,
+              tenantId: ctx.session.user.tenantId,
+            },
+          });
+
+          if (!familia) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Família não encontrada",
+            });
+          }
+
+          // Handle linking existing OR creating new member
+          let memberIdToLink: string;
+
+          if (individuoId) {
+            // Verify individuo exists and belongs to tenant
+            const individuo = await ctx.prisma.individuo.findUnique({
+              where: {
+                id: individuoId,
+                tenantId: ctx.session.user.tenantId,
+              },
+            });
+
+            if (!individuo) {
+              throw new TRPCError({
+                code: "NOT_FOUND",
+                message: "Cidadão não encontrado",
+              });
+            }
+
+            memberIdToLink = individuoId;
+          } else if (newMember) {
+            // Check CPF uniqueness
+            const cpfNormalized = newMember.cpf.replace(/\D/g, "");
+            const existingCitizen = await ctx.prisma.individuo.findUnique({
+              where: {
+                tenantId_cpf: {
+                  tenantId: ctx.session.user.tenantId,
+                  cpf: cpfNormalized,
+                },
+              },
+            });
+
+            if (existingCitizen) {
+              throw new TRPCError({
+                code: "CONFLICT",
+                message: `CPF ${cpfNormalized} já está cadastrado no sistema.`,
+              });
+            }
+
+            // Create new individuo
+            const individuo = await ctx.prisma.individuo.create({
+              data: {
+                ...newMember,
+                cpf: cpfNormalized,
+                nis: newMember.nis?.replace(/\D/g, ""),
+                tenantId: ctx.session.user.tenantId,
+                createdBy: ctx.session.user.id,
+              },
+            });
+
+            memberIdToLink = individuo.id;
+          } else {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "É necessário fornecer individuoId ou dados do novo membro",
+            });
+          }
+
+          // Check if already a member
+          const existingComposition = await ctx.prisma.composicaoFamiliar.findUnique({
+            where: {
+              familiaId_individuoId: {
+                familiaId,
+                individuoId: memberIdToLink,
+              },
+            },
+          });
+
+          if (existingComposition) {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "Este cidadão já é membro desta família",
+            });
+          }
+
+          // Add to family composition
+          const composicao = await ctx.prisma.composicaoFamiliar.create({
+            data: {
+              familiaId,
+              individuoId: memberIdToLink,
+              parentesco,
+            },
+            include: {
+              individuo: true,
+            },
+          });
+
+          return composicao;
+        },
+        ctx.session.user.id
+      );
+    }),
+
+  /**
+   * Remove family member from family
+   * TÉCNICO and GESTOR access
+   * Story 2.4: Create/Edit Profile
+   *
+   * - Cannot remove responsavel (business rule)
+   * - Soft delete via Cascade (removes from ComposicaoFamiliar only)
+   */
+  removeFamilyMember: protectedProcedure
+    .input(
+      z.object({
+        familiaId: z.string().cuid(),
+        individuoId: z.string().cuid(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      return await withTenantContext(
+        ctx.session.user.tenantId,
+        async () => {
+          const { familiaId, individuoId } = input;
+
+          // Verify familia exists and belongs to tenant
+          const familia = await ctx.prisma.familia.findUnique({
+            where: {
+              id: familiaId,
+              tenantId: ctx.session.user.tenantId,
+            },
+          });
+
+          if (!familia) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Família não encontrada",
+            });
+          }
+
+          // Cannot remove responsavel
+          if (familia.responsavelFamiliarId === individuoId) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message:
+                "Não é possível remover o responsável familiar. Transfira a responsabilidade primeiro.",
+            });
+          }
+
+          // Remove from composition
+          await ctx.prisma.composicaoFamiliar.delete({
+            where: {
+              familiaId_individuoId: {
+                familiaId,
+                individuoId,
+              },
+            },
+          });
+
+          return { success: true };
+        },
+        ctx.session.user.id
+      );
+    }),
 });

@@ -16,6 +16,7 @@
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc/client";
 import { CitizenSearchResults } from "./CitizenSearchResults";
+import Link from "next/link";
 
 export function CitizenSearch() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -192,8 +193,8 @@ export function CitizenSearch() {
             Não encontramos nenhum cidadão com &ldquo;{debouncedQuery}&rdquo;.
           </p>
           <div className="mt-6">
-            <a
-              href="/criar-perfil"
+            <Link
+              href="/perfil/novo"
               className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 transition-colors"
             >
               <svg
@@ -211,7 +212,7 @@ export function CitizenSearch() {
                 />
               </svg>
               Criar Novo Perfil
-            </a>
+            </Link>
           </div>
         </div>
       )}
