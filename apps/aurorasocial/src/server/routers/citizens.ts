@@ -3,6 +3,7 @@
  *
  * Provides endpoints for citizen/family search and profile management:
  * - citizens.search - Search citizens by name, CPF, or NIS (Story 2.2)
+ * - citizens.getProfile - Get citizen profile with history (Story 2.3)
  * - Tenant-isolated queries (NFR2, NFR5)
  * - TÉCNICO and GESTOR access
  */
@@ -10,6 +11,7 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 import { withTenantContext } from "@/lib/tenant-context";
+import { TRPCError } from "@trpc/server";
 
 export const citizensRouter = router({
   /**
@@ -111,6 +113,119 @@ export const citizensRouter = router({
               totalPages: Math.ceil(total / limit),
             },
           };
+        },
+        ctx.session.user.id
+      );
+    }),
+
+  /**
+   * Get citizen profile with complete history
+   * TÉCNICO and GESTOR access
+   * Story 2.3: Profile View Screen
+   *
+   * - Complete citizen data (CadÚnico fields)
+   * - Family composition
+   * - Service history (atendimentos)
+   * - Attachments
+   * - Tenant-isolated
+   */
+  getProfile: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().cuid(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      return await withTenantContext(
+        ctx.session.user.tenantId,
+        async () => {
+          // Fetch citizen with related data
+          const citizen = await ctx.prisma.individuo.findUnique({
+            where: {
+              id: input.id,
+              tenantId: ctx.session.user.tenantId, // Tenant isolation
+            },
+            include: {
+              // Family composition
+              familias: {
+                include: {
+                  familia: {
+                    include: {
+                      responsavel: {
+                        select: {
+                          id: true,
+                          nomeCompleto: true,
+                          cpf: true,
+                        },
+                      },
+                      membros: {
+                        include: {
+                          individuo: {
+                            select: {
+                              id: true,
+                              nomeCompleto: true,
+                              cpf: true,
+                              dataNascimento: true,
+                              sexo: true,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              // Service history (recent 10)
+              atendimentos: {
+                orderBy: {
+                  data: "desc",
+                },
+                take: 10,
+                include: {
+                  usuario: {
+                    select: {
+                      id: true,
+                      name: true,
+                      role: true,
+                    },
+                  },
+                },
+              },
+              // Attachments
+              anexos: {
+                orderBy: {
+                  uploadedAt: "desc",
+                },
+              },
+              // Families where this person is the responsible
+              familiasResponsavel: {
+                include: {
+                  membros: {
+                    include: {
+                      individuo: {
+                        select: {
+                          id: true,
+                          nomeCompleto: true,
+                          cpf: true,
+                          dataNascimento: true,
+                          sexo: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          });
+
+          if (!citizen) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Cidadão não encontrado",
+            });
+          }
+
+          return citizen;
         },
         ctx.session.user.id
       );
