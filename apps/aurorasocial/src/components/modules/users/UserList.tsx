@@ -7,18 +7,24 @@
  * - Loading and empty states
  * - WCAG AA accessibility
  * - Responsive design (cards on mobile)
+ * - Deactivate/Reactivate actions (Story 1.6)
  */
 
 "use client";
 
+import { useState } from "react";
 import { trpc } from "@/lib/trpc/client";
 import { UserStatusBadge } from "./UserStatusBadge";
 import { UserRoleBadge } from "./UserRoleBadge";
+import { DeactivateUserDialog } from "./DeactivateUserDialog";
+import { ReactivateUserDialog } from "./ReactivateUserDialog";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export function UserList() {
   const { data: users = [], isLoading, error } = trpc.users.list.useQuery();
+  const [deactivateUser, setDeactivateUser] = useState<typeof users[number] | null>(null);
+  const [reactivateUser, setReactivateUser] = useState<typeof users[number] | null>(null);
 
   if (isLoading) {
     return (
@@ -109,6 +115,12 @@ export function UserList() {
               >
                 Cadastrado em
               </th>
+              <th
+                scope="col"
+                className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500"
+              >
+                Ações
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
@@ -128,6 +140,27 @@ export function UserList() {
                 </td>
                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-600">
                   {format(new Date(user.createdAt), "dd/MM/yyyy", { locale: ptBR })}
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-right text-sm">
+                  {user.status === "ACTIVE" ? (
+                    <button
+                      onClick={() => setDeactivateUser(user)}
+                      className="text-red-600 hover:text-red-800 font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded px-2 py-1"
+                      aria-label={`Desativar ${user.name}`}
+                    >
+                      Desativar
+                    </button>
+                  ) : user.status === "INACTIVE" ? (
+                    <button
+                      onClick={() => setReactivateUser(user)}
+                      className="text-green-600 hover:text-green-800 font-medium focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 rounded px-2 py-1"
+                      aria-label={`Reativar ${user.name}`}
+                    >
+                      Reativar
+                    </button>
+                  ) : (
+                    <span className="text-gray-400">Pendente</span>
+                  )}
                 </td>
               </tr>
             ))}
@@ -152,6 +185,25 @@ export function UserList() {
                 Cadastrado em {format(new Date(user.createdAt), "dd/MM/yyyy", { locale: ptBR })}
               </span>
             </div>
+            <div className="mt-3">
+              {user.status === "ACTIVE" ? (
+                <button
+                  onClick={() => setDeactivateUser(user)}
+                  className="w-full rounded-md border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  aria-label={`Desativar ${user.name}`}
+                >
+                  Desativar
+                </button>
+              ) : user.status === "INACTIVE" ? (
+                <button
+                  onClick={() => setReactivateUser(user)}
+                  className="w-full rounded-md border border-green-300 bg-white px-4 py-2 text-sm font-medium text-green-600 hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                  aria-label={`Reativar ${user.name}`}
+                >
+                  Reativar
+                </button>
+              ) : null}
+            </div>
           </div>
         ))}
       </div>
@@ -163,6 +215,18 @@ export function UserList() {
           {users.length !== 1 ? "s" : ""}
         </p>
       </div>
+
+      {/* Dialogs */}
+      <DeactivateUserDialog
+        user={deactivateUser}
+        open={!!deactivateUser}
+        onOpenChange={(open) => !open && setDeactivateUser(null)}
+      />
+      <ReactivateUserDialog
+        user={reactivateUser}
+        open={!!reactivateUser}
+        onOpenChange={(open) => !open && setReactivateUser(null)}
+      />
     </div>
   );
 }

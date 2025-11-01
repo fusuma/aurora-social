@@ -4,6 +4,8 @@
  * Provides GESTOR-only endpoints for user management:
  * - users.list - List all users in the same municipality (tenant)
  * - users.invite - Invite new user to the municipality (Story 1.5)
+ * - users.deactivate - Deactivate user account (Story 1.6)
+ * - users.reactivate - Reactivate user account (Story 1.6)
  */
 
 import { z } from "zod";
@@ -169,6 +171,116 @@ export const usersRouter = router({
             role: newUser.role,
             status: newUser.status,
           };
+        },
+        ctx.session.user.id
+      );
+    }),
+
+  /**
+   * Deactivate user account
+   * GESTOR-only access
+   * Story 1.6: Desativar Usuário
+   *
+   * - Sets user status to INACTIVE
+   * - Prevents further login (handled in auth.ts)
+   * - Deletes active sessions (immediate logout)
+   * - Preserves user record (soft delete)
+   * - Prevents self-deactivation
+   */
+  deactivate: gestorProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      return await withTenantContext(
+        ctx.session.user.tenantId,
+        async () => {
+          // Prevent self-deactivation
+          if (input.userId === ctx.session.user.id) {
+            throw new TRPCError({
+              code: "FORBIDDEN",
+              message: "Você não pode desativar sua própria conta",
+            });
+          }
+
+          // Verify user belongs to same tenant
+          const user = await ctx.prisma.user.findFirst({
+            where: {
+              id: input.userId,
+              tenantId: ctx.session.user.tenantId,
+            },
+          });
+
+          if (!user) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Usuário não encontrado",
+            });
+          }
+
+          // Update user status to INACTIVE
+          const updatedUser = await ctx.prisma.user.update({
+            where: { id: input.userId },
+            data: {
+              status: "INACTIVE",
+            },
+          });
+
+          // Delete active sessions to force logout
+          await ctx.prisma.session.deleteMany({
+            where: { userId: input.userId },
+          });
+
+          return updatedUser;
+        },
+        ctx.session.user.id
+      );
+    }),
+
+  /**
+   * Reactivate user account
+   * GESTOR-only access
+   * Story 1.6: Desativar Usuário (bonus functionality)
+   *
+   * - Sets user status to ACTIVE
+   * - Allows user to log in again
+   */
+  reactivate: gestorProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      return await withTenantContext(
+        ctx.session.user.tenantId,
+        async () => {
+          // Verify user belongs to same tenant
+          const user = await ctx.prisma.user.findFirst({
+            where: {
+              id: input.userId,
+              tenantId: ctx.session.user.tenantId,
+            },
+          });
+
+          if (!user) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Usuário não encontrado",
+            });
+          }
+
+          // Update user status to ACTIVE
+          const updatedUser = await ctx.prisma.user.update({
+            where: { id: input.userId },
+            data: {
+              status: "ACTIVE",
+            },
+          });
+
+          return updatedUser;
         },
         ctx.session.user.id
       );
