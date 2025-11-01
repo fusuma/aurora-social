@@ -28,6 +28,7 @@ interface AtendimentoHistoryListProps {
     }
   >;
   citizenId: string;
+  onRegisterClick?: () => void;
 }
 
 /**
@@ -66,7 +67,11 @@ function getDemandTypeColor(tipo: TipoDemanda): string {
   return colors[tipo];
 }
 
-export function AtendimentoHistoryList({ atendimentos, citizenId }: AtendimentoHistoryListProps) {
+export function AtendimentoHistoryList({
+  atendimentos,
+  citizenId,
+  onRegisterClick,
+}: AtendimentoHistoryListProps) {
   return (
     <section
       className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
@@ -169,28 +174,30 @@ export function AtendimentoHistoryList({ atendimentos, citizenId }: AtendimentoH
           <p className="mt-1 text-sm text-gray-600">
             Este cidadão ainda não possui atendimentos registrados.
           </p>
-          <div className="mt-4">
-            <Link
-              href={`/perfil/${citizenId}/registrar-visita`}
-              className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 transition-colors"
-            >
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
+          {onRegisterClick && (
+            <div className="mt-4">
+              <button
+                onClick={onRegisterClick}
+                className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 transition-colors"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              Registrar Primeira Visita
-            </Link>
-          </div>
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+                Registrar Primeira Visita
+              </button>
+            </div>
+          )}
         </div>
       )}
     </section>

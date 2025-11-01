@@ -638,4 +638,88 @@ export const citizensRouter = router({
         ctx.session.user.id
       );
     }),
+
+  /**
+   * Create atendimento (register visit)
+   * TÉCNICO and GESTOR access
+   * Story 2.5: Atendimento Modal
+   *
+   * - Auto-populate date/time (current)
+   * - Auto-populate userId (current user)
+   * - Tenant-isolated (NFR2)
+   * - Audit trail (NFR5)
+   */
+  createAtendimento: protectedProcedure
+    .input(
+      z.object({
+        individuoId: z.string().cuid(),
+        tipoDemanda: z.enum([
+          "BENEFICIO_EVENTUAL",
+          "CADASTRO_UNICO",
+          "BPC",
+          "BOLSA_FAMILIA",
+          "ORIENTACAO_SOCIAL",
+          "ENCAMINHAMENTO_SAUDE",
+          "ENCAMINHAMENTO_EDUCACAO",
+          "VIOLACAO_DIREITOS",
+          "OUTRO",
+        ]),
+        encaminhamento: z
+          .string()
+          .min(10, "Encaminhamento deve ter ao menos 10 caracteres")
+          .max(5000, "Encaminhamento deve ter no máximo 5000 caracteres"),
+        parecerSocial: z
+          .string()
+          .min(10, "Parecer social deve ter ao menos 10 caracteres")
+          .max(5000, "Parecer social deve ter no máximo 5000 caracteres"),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      return await withTenantContext(
+        ctx.session.user.tenantId,
+        async () => {
+          const { individuoId, tipoDemanda, encaminhamento, parecerSocial } = input;
+
+          // Verify individuo exists and belongs to tenant
+          const individuo = await ctx.prisma.individuo.findUnique({
+            where: {
+              id: individuoId,
+              tenantId: ctx.session.user.tenantId,
+            },
+          });
+
+          if (!individuo) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Cidadão não encontrado",
+            });
+          }
+
+          // Create atendimento with auto-populated fields
+          const atendimento = await ctx.prisma.atendimento.create({
+            data: {
+              tenantId: ctx.session.user.tenantId,
+              individuoId,
+              userId: ctx.session.user.id, // Auto-populate current user
+              data: new Date(), // Auto-populate current date/time
+              tipoDemanda,
+              encaminhamento,
+              parecerSocial,
+            },
+            include: {
+              usuario: {
+                select: {
+                  id: true,
+                  name: true,
+                  role: true,
+                },
+              },
+            },
+          });
+
+          return atendimento;
+        },
+        ctx.session.user.id
+      );
+    }),
 });

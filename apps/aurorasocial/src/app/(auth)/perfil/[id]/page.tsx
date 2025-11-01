@@ -15,11 +15,12 @@
 
 "use client";
 
-import { use } from "react";
+import { use, useState } from "react";
 import { trpc } from "@/lib/trpc/client";
 import { ProfileOverview } from "@/components/modules/citizens/ProfileOverview";
 import { AtendimentoHistoryList } from "@/components/modules/citizens/AtendimentoHistoryList";
 import { AttachmentList } from "@/components/modules/citizens/AttachmentList";
+import { AtendimentoModal } from "@/components/modules/citizens/AtendimentoModal";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -30,8 +31,9 @@ interface ProfilePageProps {
 export default function ProfilePage({ params }: ProfilePageProps) {
   const router = useRouter();
   const { id } = use(params);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data: citizen, isLoading, error } = trpc.citizens.getProfile.useQuery({ id });
+  const { data: citizen, isLoading, error, refetch } = trpc.citizens.getProfile.useQuery({ id });
 
   // Loading state
   if (isLoading) {
@@ -126,8 +128,8 @@ export default function ProfilePage({ params }: ProfilePageProps) {
 
           {/* Action Buttons (Story 2.4, 2.5, 2.6) */}
           <div className="flex flex-wrap gap-3">
-            <Link
-              href={`/perfil/${id}/registrar-visita`}
+            <button
+              onClick={() => setIsModalOpen(true)}
               className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 transition-colors"
             >
               <svg
@@ -145,7 +147,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
                 />
               </svg>
               Registrar Visita
-            </Link>
+            </button>
 
             <Link
               href={`/perfil/${id}/adicionar-anexo`}
@@ -201,10 +203,27 @@ export default function ProfilePage({ params }: ProfilePageProps) {
 
         {/* Right Column - History and Attachments (1/3 width on large screens) */}
         <div className="lg:col-span-1 space-y-6">
-          <AtendimentoHistoryList atendimentos={citizen.atendimentos} citizenId={id} />
-          <AttachmentList anexos={citizen.anexos} citizenId={id} />
+          <AtendimentoHistoryList
+            atendimentos={citizen.atendimentos}
+            citizenId={id}
+            onRegisterClick={() => setIsModalOpen(true)}
+          />
+          <AttachmentList
+            anexos={citizen.anexos}
+            citizenId={id}
+            entityType="individuo"
+            onRefresh={() => refetch()}
+          />
         </div>
       </div>
+
+      {/* Atendimento Modal (Story 2.5) */}
+      <AtendimentoModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        citizenId={id}
+        citizenName={citizen.nomeCompleto}
+      />
     </div>
   );
 }
