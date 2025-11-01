@@ -34,7 +34,8 @@
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
     "resend": "^6.4.0",
-    "superjson": "^2.2.5"
+    "superjson": "^2.2.5",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.1",
