@@ -23,8 +23,8 @@ import { ptBR } from "date-fns/locale";
 
 export function UserList() {
   const { data: users = [], isLoading, error } = trpc.users.list.useQuery();
-  const [deactivateUser, setDeactivateUser] = useState<typeof users[number] | null>(null);
-  const [reactivateUser, setReactivateUser] = useState<typeof users[number] | null>(null);
+  const [deactivateUser, setDeactivateUser] = useState<(typeof users)[number] | null>(null);
+  const [reactivateUser, setReactivateUser] = useState<(typeof users)[number] | null>(null);
 
   if (isLoading) {
     return (

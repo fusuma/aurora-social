@@ -1,0 +1,31 @@
+{
+  "operation": "commit",
+  "epic_id": "epic-002",
+  "story_id": "story-2.3",
+  "date": "2025-11-01",
+  "started_at": "2025-11-01T05:15:00Z",
+  "completed_at": "2025-11-01T05:16:00Z",
+  "duration_minutes": 1,
+  "agent": "git-specialist",
+  "status": "success",
+  "commit_info": {
+    "hash": "cdec36f",
+    "message": "feat(epic-2): implement comprehensive profile view with CadÚnico data display",
+    "type": "feat",
+    "scope": "epic-2",
+    "files_changed": 5,
+    "insertions": 1144,
+    "deletions": 0,
+    "stories": ["story-2.3"],
+    "co_authors": ["dev"],
+    "issues_closed": [],
+    "files_committed": [
+      "apps/aurorasocial/src/app/(auth)/perfil/[id]/page.tsx",
+      "apps/aurorasocial/src/components/modules/citizens/AtendimentoHistoryList.tsx",
+      "apps/aurorasocial/src/components/modules/citizens/AttachmentList.tsx",
+      "apps/aurorasocial/src/components/modules/citizens/ProfileOverview.tsx",
+      "apps/aurorasocial/src/server/routers/citizens.ts"
+    ]
+  },
+  "source_status_note": "/Users/fusuma/dev/AuroraSocial/docs/implementation-reports/aurora-social/.status/s2.3-profile-view.json"
+}

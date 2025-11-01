@@ -1,0 +1,45 @@
+{
+  "operation": "commit",
+  "epic_id": "epic-1",
+  "story_id": "story-1.6",
+  "date": "2025-11-01",
+  "started_at": "2025-11-01T05:15:00Z",
+  "completed_at": "2025-11-01T05:16:00Z",
+  "duration_minutes": 1,
+  "agent": "git-specialist",
+  "status": "success",
+  "commit_info": {
+    "hash": "a2f7e0705a2e8b81f1848e1067154ae3f289f7d8",
+    "message": "feat(epic-1): implement LGPD-compliant user deactivation and reactivation",
+    "type": "feat",
+    "scope": "epic-1",
+    "files_changed": 4,
+    "insertions": 355,
+    "deletions": 0,
+    "stories": ["story-1.6"],
+    "co_authors": ["dev"],
+    "issues_closed": [],
+    "files": [
+      "apps/aurorasocial/src/components/modules/users/DeactivateUserDialog.tsx",
+      "apps/aurorasocial/src/components/modules/users/ReactivateUserDialog.tsx",
+      "apps/aurorasocial/src/components/modules/users/UserList.tsx",
+      "apps/aurorasocial/src/server/routers/users.ts"
+    ]
+  },
+  "source_status_note": "docs/implementation-reports/aurora-social/.status/s1.6-deactivate-user.json",
+  "implementation_details": {
+    "acceptance_criteria_satisfied": 4,
+    "tasks_completed": 6,
+    "duration_minutes": 45,
+    "estimated_cost": "$0.30",
+    "tokens_used": 10000,
+    "review_outcome": "pass",
+    "review_score": {
+      "architecture": "good",
+      "quality": "good",
+      "security": "good"
+    }
+  },
+  "dependencies": ["story-1.4", "story-1.5", "story-1.2"],
+  "tags": ["epic-1", "user-management", "lgpd", "rbac", "gestor-only"]
+}

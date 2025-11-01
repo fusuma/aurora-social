@@ -1,0 +1,23 @@
+{
+  "operation": "commit",
+  "epic_id": "epic-2",
+  "story_id": "story-2.4",
+  "date": "2025-11-01",
+  "started_at": "2025-11-01T11:30:00Z",
+  "completed_at": "2025-11-01T11:35:00Z",
+  "duration_minutes": 5,
+  "agent": "git-specialist",
+  "status": "success",
+  "commit_info": {
+    "hash": "bcb9e77d146244687f5bf87133dbb93cd4681c2d",
+    "message": "feat(epic-2): implement create/edit citizen profile with CadÚnico fields",
+    "type": "feat",
+    "scope": "epic-2",
+    "files_changed": 7,
+    "insertions": 1963,
+    "deletions": 3,
+    "stories": ["story-2.4"],
+    "co_authors": ["dev"],
+    "issues_closed": ["story-2.4"]
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "operation": "commit",
+  "epic_id": "epic-2",
+  "story_id": "story-2.2",
+  "date": "2025-11-01",
+  "started_at": "2025-11-01T05:00:42Z",
+  "completed_at": "2025-11-01T05:00:42Z",
+  "duration_minutes": 0,
+  "agent": "git-specialist",
+  "status": "success",
+  "commit_info": {
+    "hash": "37ed5c5ca81c55f7774749a7a9965dc9fb26b8ed",
+    "short_hash": "37ed5c5",
+    "message": "feat(epic-2): implement citizen search with fuzzy matching and tenant isolation",
+    "type": "feat",
+    "scope": "epic-2",
+    "files_changed": 5,
+    "insertions": 698,
+    "deletions": 11,
+    "stories": ["story-2.2"],
+    "co_authors": ["dev"],
+    "issues_closed": [],
+    "files_modified": [
+      "apps/aurorasocial/src/app/(auth)/(tecnico)/pesquisar/page.tsx",
+      "apps/aurorasocial/src/components/modules/citizens/CitizenSearch.tsx",
+      "apps/aurorasocial/src/components/modules/citizens/CitizenSearchResults.tsx",
+      "apps/aurorasocial/src/server/routers/_app.ts",
+      "apps/aurorasocial/src/server/routers/citizens.ts"
+    ]
+  },
+  "repository_health": {
+    "clean_working_directory": false,
+    "conflicts": false,
+    "large_files": [],
+    "uncommitted_count": 8
+  }
+}

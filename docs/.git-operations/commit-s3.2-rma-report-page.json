@@ -1,0 +1,40 @@
+{
+  "operation": "commit",
+  "epic_id": "epic-3",
+  "story_id": "s3.2",
+  "date": "2025-11-01",
+  "started_at": "2025-11-01T14:30:00Z",
+  "completed_at": "2025-11-01T14:32:00Z",
+  "duration_minutes": 2,
+  "agent": "git-specialist",
+  "status": "success",
+
+  "commit_info": {
+    "hash": "fd4fc21",
+    "message": "feat(epic-3): implement RMA reports page with GESTOR-only access",
+    "type": "feat",
+    "scope": "epic-3",
+    "files_changed": 4,
+    "insertions": 544,
+    "deletions": 0,
+    "stories": ["s3.2"],
+    "co_authors": ["dev"],
+    "issues_closed": []
+  },
+
+  "story_context": {
+    "title": "RMA Report Page Implementation",
+    "duration_minutes": 75,
+    "estimated_cost": "$1.47",
+    "acceptance_criteria_satisfied": 7,
+    "review_outcome": "pass",
+    "files_created": [
+      "apps/aurorasocial/src/app/(auth)/(gestor)/relatorios/page.tsx",
+      "apps/aurorasocial/src/components/modules/reports/ReportSelector.tsx",
+      "apps/aurorasocial/src/components/modules/reports/RmaReportPreview.tsx"
+    ],
+    "files_modified": [
+      "apps/aurorasocial/src/components/modules/navigation/GestorNav.tsx"
+    ]
+  }
+}

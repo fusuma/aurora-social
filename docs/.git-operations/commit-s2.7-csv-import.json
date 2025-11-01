@@ -1,0 +1,24 @@
+{
+  "operation": "commit",
+  "epic_id": "epic-002",
+  "story_id": "epic-002-s2.7",
+  "date": "2025-11-01",
+  "started_at": "2025-11-01T06:20:00Z",
+  "completed_at": "2025-11-01T06:21:00Z",
+  "duration_minutes": 1,
+  "agent": "git-specialist",
+  "status": "success",
+  "commit_info": {
+    "hash": "666e191",
+    "message": "feat(epic-002): implement CSV bulk citizen import with validation",
+    "type": "feat",
+    "scope": "epic-002",
+    "files_changed": 8,
+    "insertions": 1085,
+    "deletions": 0,
+    "stories": ["epic-002-s2.7"],
+    "co_authors": ["dev"],
+    "issues_closed": [],
+    "dependencies_completed": ["epic-002-s2.1", "epic-002-s2.2", "epic-002-s2.3"]
+  }
+}

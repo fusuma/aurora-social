@@ -1,0 +1,57 @@
+{
+  "operation": "commit",
+  "epic_id": "epic-2",
+  "story_id": "story-2.1",
+  "date": "2025-11-01",
+  "started_at": "2025-11-01T04:00:30Z",
+  "completed_at": "2025-11-01T04:01:00Z",
+  "duration_minutes": 1,
+  "agent": "git-specialist",
+  "status": "success",
+
+  "commit_info": {
+    "hash": "5a69d8378e3527dc97e24e2af28ebde1e1169493",
+    "short_hash": "5a69d83",
+    "message": "feat(epic-2): implement CadÚnico-compatible citizen data model",
+    "type": "feat",
+    "scope": "epic-2",
+    "files_changed": 8,
+    "insertions": 1356,
+    "deletions": 11,
+    "stories": ["story-2.1"],
+    "co_authors": ["dev"],
+    "issues_closed": [],
+    "branch": "main"
+  },
+
+  "story_context": {
+    "title": "Citizen Data Model",
+    "summary": "Implemented CadÚnico-compatible citizen models with automatic tenant isolation",
+    "acceptance_criteria_satisfied": 5,
+    "acceptance_criteria_total": 5,
+    "senior_review": "pass",
+    "enabler": true,
+    "blocks": ["all Epic 2 features"]
+  },
+
+  "files_committed": [
+    "apps/aurorasocial/prisma/schema.prisma",
+    "apps/aurorasocial/src/lib/prisma.ts",
+    "apps/aurorasocial/src/lib/tenant-context.ts",
+    "apps/aurorasocial/src/lib/TENANT_ISOLATION_USAGE.md",
+    "apps/aurorasocial/src/lib/__tests__/tenant-isolation.test.ts",
+    "apps/aurorasocial/prisma/migrations/20251101035715_add_citizen_data_models/migration.sql",
+    "docs/implementation-reports/aurora-social/.status/s2.1-citizen-data-model.json",
+    "docs/implementation-reports/aurora-social/stories/2025-11-01-s2.1-citizen-data-model-completion.md"
+  ],
+
+  "repository_health": {
+    "clean_working_directory": false,
+    "conflicts": false,
+    "large_files": [],
+    "branch_ahead": 3,
+    "branch_behind": 0,
+    "last_commit": "5a69d83",
+    "uncommitted_count": 3
+  }
+}

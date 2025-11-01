@@ -1,0 +1,45 @@
+{
+  "operation": "commit",
+  "epic_id": "epic-3",
+  "story_id": "epic-3-s3.1",
+  "date": "2025-11-01",
+  "started_at": "2025-11-01T10:00:00Z",
+  "completed_at": "2025-11-01T10:01:00Z",
+  "duration_minutes": 1,
+  "agent": "git-specialist",
+  "status": "success",
+
+  "commit_info": {
+    "hash": "3c08e69",
+    "message": "feat(epic-3): implement Reports API foundation with dashboard metrics and RMA generation",
+    "type": "feat",
+    "scope": "epic-3",
+    "files_changed": 5,
+    "insertions": 1073,
+    "deletions": 0,
+    "stories": ["epic-3-s3.1"],
+    "co_authors": ["dev"],
+    "issues_closed": [],
+    "files_committed": [
+      "apps/aurorasocial/src/server/routers/reporting.ts",
+      "apps/aurorasocial/src/server/routers/_app.ts",
+      "apps/aurorasocial/tests/integration/reporting-manual-tests.md",
+      "docs/implementation-reports/aurora-social/.status/s3.1-reports-api.json",
+      "docs/implementation-reports/aurora-social/stories/2025-11-01-s3.1-reports-api-completion.md"
+    ]
+  },
+
+  "story_summary": {
+    "title": "Story 3.1 - Reports API Foundation",
+    "acceptance_criteria_satisfied": 7,
+    "acceptance_criteria_total": 7,
+    "review_outcome": "pass",
+    "review_scores": {
+      "architecture": "good",
+      "quality": "good",
+      "security": "good"
+    },
+    "duration_minutes": 11,
+    "estimated_cost": "$0.45"
+  }
+}
