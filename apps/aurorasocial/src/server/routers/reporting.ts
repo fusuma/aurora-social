@@ -358,5 +358,56 @@ export const reportingRouter = router({
           ctx.session.user.id
         );
       }),
+
+    /**
+     * Export RMA Report Data for PDF/Excel Generation
+     * Story 3.3: Export endpoints
+     * AC1: Backend API to generate PDF/Excel files
+     * AC3: Tenant isolation (NFR2, NFR5)
+     *
+     * Returns the same data as generate() but with explicit export intent
+     * Client-side will use this to trigger PDF/Excel generation
+     */
+    exportData: gestorProcedure
+      .input(
+        z.object({
+          mes: z.number().int().min(1).max(12),
+          ano: z.number().int().min(2000).max(2100),
+        })
+      )
+      .query(async ({ input, ctx }) => {
+        return await withTenantContext(
+          ctx.session.user.tenantId,
+          async () => {
+            const { mes, ano } = input;
+
+            // Validate month/year is not in the future
+            const now = new Date();
+            const requestedDate = new Date(ano, mes - 1, 1);
+
+            if (requestedDate > now) {
+              throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "Não é possível gerar relatório para mês/ano futuro",
+              });
+            }
+
+            // AC4: Tenant filtering via withTenantContext and passed tenantId
+            const reportData = await fetchRMAReportData(ctx.session.user.tenantId, mes, ano, ctx);
+
+            // Get tenant name for report header
+            const municipality = await ctx.prisma.municipality.findUnique({
+              where: { id: ctx.session.user.tenantId },
+              select: { name: true },
+            });
+
+            return {
+              ...reportData,
+              tenantName: municipality?.name,
+            };
+          },
+          ctx.session.user.id
+        );
+      }),
   }),
 });

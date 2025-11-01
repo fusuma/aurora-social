@@ -7,18 +7,30 @@
  * - AC5: Export buttons for PDF and Excel (Story 3.3)
  * - AC7: User-friendly error messages
  *
+ * Story 3.3 - PDF/Excel Export:
+ * - AC1: Export to PDF functionality
+ * - AC2: Export to Excel functionality
+ * - AC4: Loading indicators during export
+ * - AC5: Descriptive filenames
+ * - AC6: User-friendly error messages on export failure
+ *
  * Features:
  * - Calls reporting.rma.generate() API (Story 3.1)
  * - Loading state with clear indicator
  * - Error handling with user-friendly messages
  * - RMA data display with proper formatting
- * - Export buttons (functionality in Story 3.3)
+ * - Export buttons with PDF/Excel generation (Story 3.3)
  * - WCAG AA accessibility
  */
 
 "use client";
 
+import { useState } from "react";
 import { trpc } from "@/lib/trpc/client";
+import { pdf } from "@react-pdf/renderer";
+import { RMAPDFDocument, generateRMAPDFFilename } from "@/lib/exports/pdf-rma";
+import { generateRMAExcelWorkbook, generateRMAExcelFilename } from "@/lib/exports/excel-rma";
+import * as XLSX from "xlsx";
 
 interface RmaReportPreviewProps {
   mes: number;
@@ -26,6 +38,11 @@ interface RmaReportPreviewProps {
 }
 
 export function RmaReportPreview({ mes, ano }: RmaReportPreviewProps) {
+  // Story 3.3: Export loading states
+  const [isExportingPDF, setIsExportingPDF] = useState(false);
+  const [isExportingExcel, setIsExportingExcel] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+
   // AC3: Call API with loading state
   const {
     data: reportData,
@@ -39,6 +56,70 @@ export function RmaReportPreview({ mes, ano }: RmaReportPreviewProps) {
       refetchOnWindowFocus: false,
     }
   );
+
+  /**
+   * Story 3.3 - AC1: Export to PDF
+   * Generates PDF using @react-pdf/renderer and downloads it
+   */
+  const handleExportPDF = async () => {
+    if (!reportData) return;
+
+    setIsExportingPDF(true);
+    setExportError(null);
+
+    try {
+      // Generate PDF document
+      const pdfDoc = <RMAPDFDocument data={reportData} />;
+      const blob = await pdf(pdfDoc).toBlob();
+
+      // AC5: Create descriptive filename
+      const filename = generateRMAPDFFilename(mes, ano);
+
+      // Trigger download
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      // AC6: User-friendly error message
+      console.error("Erro ao gerar PDF:", err);
+      setExportError("Não foi possível gerar o arquivo PDF. Por favor, tente novamente.");
+    } finally {
+      setIsExportingPDF(false);
+    }
+  };
+
+  /**
+   * Story 3.3 - AC2: Export to Excel
+   * Generates Excel using xlsx library and downloads it
+   */
+  const handleExportExcel = async () => {
+    if (!reportData) return;
+
+    setIsExportingExcel(true);
+    setExportError(null);
+
+    try {
+      // Generate Excel workbook
+      const workbook = generateRMAExcelWorkbook(reportData);
+
+      // AC5: Create descriptive filename
+      const filename = generateRMAExcelFilename(mes, ano);
+
+      // Trigger download
+      XLSX.writeFile(workbook, filename);
+    } catch (err) {
+      // AC6: User-friendly error message
+      console.error("Erro ao gerar Excel:", err);
+      setExportError("Não foi possível gerar o arquivo Excel. Por favor, tente novamente.");
+    } finally {
+      setIsExportingExcel(false);
+    }
+  };
 
   // Month names for display
   const monthNames = [
@@ -121,6 +202,50 @@ export function RmaReportPreview({ mes, ano }: RmaReportPreviewProps) {
   // AC4: Display data according to RMA layout
   return (
     <div className="mt-8 space-y-6">
+      {/* Story 3.3 - AC6: Export error message */}
+      {exportError && (
+        <div
+          className="rounded-lg border border-red-200 bg-red-50 p-4"
+          role="alert"
+          aria-live="assertive"
+        >
+          <div className="flex items-start gap-3">
+            <svg
+              className="h-5 w-5 text-red-600 flex-shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <div>
+              <h3 className="text-sm font-semibold text-red-900">Erro na exportação</h3>
+              <p className="mt-1 text-sm text-red-700">{exportError}</p>
+            </div>
+            <button
+              onClick={() => setExportError(null)}
+              className="ml-auto text-red-600 hover:text-red-800"
+              aria-label="Fechar mensagem de erro"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Report Header - AC4 */}
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <div className="flex items-start justify-between">
@@ -136,51 +261,69 @@ export function RmaReportPreview({ mes, ano }: RmaReportPreviewProps) {
             </p>
           </div>
 
-          {/* AC5: Export buttons for Story 3.3 */}
+          {/* Story 3.3 - AC1, AC2, AC4: Export buttons with functionality */}
           <div className="flex gap-3">
             <button
+              onClick={handleExportPDF}
+              disabled={isExportingPDF || isExportingExcel}
               className="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled
               aria-label="Exportar para PDF"
-              title="Funcionalidade será implementada na História 3.3"
             >
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                />
-              </svg>
-              Exportar PDF
+              {isExportingPDF ? (
+                <>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-700 border-t-transparent"></div>
+                  Gerando PDF...
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                    />
+                  </svg>
+                  Exportar PDF
+                </>
+              )}
             </button>
             <button
+              onClick={handleExportExcel}
+              disabled={isExportingPDF || isExportingExcel}
               className="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled
               aria-label="Exportar para Excel"
-              title="Funcionalidade será implementada na História 3.3"
             >
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-              Exportar Excel
+              {isExportingExcel ? (
+                <>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-700 border-t-transparent"></div>
+                  Gerando Excel...
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  Exportar Excel
+                </>
+              )}
             </button>
           </div>
         </div>
