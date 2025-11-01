@@ -1,18 +1,29 @@
-import { auth } from "@/lib/auth";
+/**
+ * Dashboard Page (GESTOR-only)
+ *
+ * Story 3.4: Implementação do Dashboard Gerencial
+ *
+ * Displays management dashboard with:
+ * - Key metrics (Total Atendimentos, Families, Individuals)
+ * - Monthly trend chart (last 12 months)
+ * - Demand type distribution chart
+ * - Last updated timestamp
+ * - Manual refresh button
+ * - Loading and error states
+ * - 1-hour cache from API (Story 3.1)
+ * - WCAG AA accessibility
+ *
+ * AC1: Dashboard is default screen for GESTOR role
+ * AC2: Displays cards with key metrics
+ * AC3: Shows last update timestamp
+ * AC4: Data query respects cache trade-off (not real-time)
+ * AC5: WCAG AA compliance
+ * AC6: Data filtered by tenantId (enforced by API)
+ * AC7: User-friendly error messages
+ */
 
-export default async function DashboardPage() {
-  const session = await auth();
+import { DashboardContent } from "./DashboardContent";
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-900">Dashboard Gerencial</h1>
-      <p className="mt-4 text-gray-600">Bem-vindo, {session?.user?.name} (Gestor)</p>
-      <div className="mt-6 rounded-lg bg-white p-6 shadow">
-        <h2 className="text-xl font-semibold">Métricas-Chave</h2>
-        <p className="mt-2 text-sm text-gray-600">
-          Dashboard de métricas será implementado na História 3.4
-        </p>
-      </div>
-    </div>
-  );
+export default function DashboardPage() {
+  return <DashboardContent />;
 }
