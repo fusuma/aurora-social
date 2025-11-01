@@ -1,1 +1,4 @@
 {"date": "2025-11-01", "agent": "dev", "task": "story-1.1", "epic": "story-1.1", "tags": ["foundation", "infrastructure", "greenfield"], "path": "docs/implementation-reports/aurora-social/stories/2025-11-01-s1.1-technical-foundation-completion.md"}
+{ "date": "2025-11-01", "agent": "dev", "task": "story-2.1", "epic": "epic-2", "tags": ["epic-2", "citizen-management", "data-model", "multi-tenant"], "path": "docs/implementation-reports/aurora-social/stories/2025-11-01-s2.1-citizen-data-model-completion.md" }
+{"date": "2025-11-01", "agent": "stuck", "task": "draft-story-approval", "epic": "aurora-social", "tags": ["decision", "escalation", "approval"], "path": "docs/decisions/2025-11-01-draft-story-approval.md"}
+{"date": "2025-11-01", "agent": "dev", "task": "story-1.2", "epic": "epic-1", "tags": ["authentication", "login", "accessibility"], "path": "docs/implementation-reports/aurora-social/stories/2025-11-01-s1.2-login-screen-completion.md"}
