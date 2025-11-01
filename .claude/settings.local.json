@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//tmp/**)",
+      "Bash(az webapp config hostname list --resource-group PRODUCTION --webapp-name mynewcarespace -o table)",
+      "Bash(az webapp config hostname list --resource-group PRODUCTION --webapp-name MyCareSpace -o table)",
+      "Bash(az staticwebapp list --query \"[].{Name:name, ResourceGroup:resourceGroup, DefaultHostname:defaultHostname}\" -o table)",
+      "Bash(az webapp config hostname list --resource-group PRODUCTION --webapp-name carespace-reports -o table)",
+      "Bash(nslookup develop.carespace.ai)",
+      "Bash(az containerapp list --query \"[?contains(name, ''develop'') || contains(name, ''nginx'')].{Name:name, ResourceGroup:resourceGroup, FQDN:properties.configuration.ingress.fqdn}\" -o table)",
+      "Bash(az containerapp list --query \"[].{Name:name, ResourceGroup:resourceGroup, FQDN:properties.configuration.ingress.fqdn}\" -o table)",
+      "Bash(az containerapp hostname list --name nginx-proxy-develop --resource-group DEVELOP -o table)",
+      "Bash(az containerapp show --name nginx-proxy-develop --resource-group DEVELOP --query \"{Name:name, FQDN:properties.configuration.ingress.fqdn, CustomDomains:properties.configuration.ingress.customDomains}\" -o json)",
+      "Bash(az containerapp env certificate list --name develop-containerapps --resource-group DEVELOP -o table)",
+      "Bash(az containerapp env certificate list --name develop-containerapps --resource-group DEVELOP --query \"[?name==''carespace''].{Name:name, SubjectName:properties.subjectName, Issuer:properties.issuer, ExpirationDate:properties.expirationDate, Thumbprint:properties.thumbprint}\" -o json)",
+      "Bash(az containerapp env certificate list --name develop-containerapps --resource-group DEVELOP --query \"[].{Name:name, SubjectName:properties.subjectName, Issuer:properties.issuer, ExpirationDate:properties.expirationDate, Thumbprint:properties.thumbprint}\" -o json)",
+      "Bash(az containerapp env certificate show --name develop.carespace.ai-develop--250425233252 --managed-environment develop-containerapps --resource-group DEVELOP -o json)",
+      "Skill(superpowers:brainstorming)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "playwright"
+  ]
+}
