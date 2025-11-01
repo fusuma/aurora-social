@@ -23,11 +23,18 @@
     "@react-email/container": "^0.0.15",
     "@react-email/html": "^0.0.11",
     "@react-email/text": "^0.1.5",
+    "@tanstack/react-query": "^4.42.0",
+    "@trpc/client": "^10.45.2",
+    "@trpc/next": "^10.45.2",
+    "@trpc/react-query": "^10.45.2",
+    "@trpc/server": "^10.45.2",
+    "date-fns": "^3.6.0",
     "next": "15.0.3",
     "next-auth": "^5.0.0-beta.30",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
-    "resend": "^6.4.0"
+    "resend": "^6.4.0",
+    "superjson": "^2.2.5"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.1",

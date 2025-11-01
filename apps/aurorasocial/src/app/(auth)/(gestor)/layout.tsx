@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import AccessDenied from "@/components/modules/auth/AccessDenied";
+import { GestorNav } from "@/components/modules/navigation/GestorNav";
 
 export default async function GestorLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -9,5 +10,10 @@ export default async function GestorLayout({ children }: { children: React.React
     return <AccessDenied />;
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <GestorNav />
+      {children}
+    </>
+  );
 }
