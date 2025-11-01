@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: apps/aurorasocial/package-lock.json
+
+      - name: Install dependencies
+        working-directory: apps/aurorasocial
+        run: npm ci --legacy-peer-deps
+
+      - name: Generate Prisma Client
+        working-directory: apps/aurorasocial
+        run: npx prisma generate
+
+      - name: Run linter
+        working-directory: apps/aurorasocial
+        run: npm run lint
+
+      - name: Run unit tests
+        working-directory: apps/aurorasocial
+        run: npm run test
+
+      - name: Install Playwright Browsers
+        working-directory: apps/aurorasocial
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        working-directory: apps/aurorasocial
+        run: npm run test:e2e
+        env:
+          CI: true
+
+      - name: Build application
+        working-directory: apps/aurorasocial
+        run: npm run build
+        env:
+          POSTGRES_PRISMA_URL: "postgresql://localhost:5432/test"
+          POSTGRES_URL_NON_POOLING: "postgresql://localhost:5432/test"
+          NEXTAUTH_SECRET: "test-secret"
+          NEXTAUTH_URL: "http://localhost:3000"
