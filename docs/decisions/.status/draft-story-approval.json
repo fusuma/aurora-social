@@ -1,0 +1,21 @@
+{
+  "task": "Resolve Draft story status blocking epic execution",
+  "agent": "stuck",
+  "date": "2025-11-01",
+  "started_at": "2025-11-01T00:00:00Z",
+  "completed_at": "2025-11-01T00:05:00Z",
+  "duration_minutes": 5,
+  "status": "complete",
+  "outcome": "resolved",
+  "summary": "User approved auto-approval of all 16 Draft stories",
+  "issues": "",
+  "depends_on": [],
+  "blocked_by": [],
+  "retry_count": 0,
+  "previous_attempt": "",
+  "tokens_used": 500,
+  "estimated_cost": "$0.015",
+  "tags": ["decision", "human-input", "escalation", "story-approval"],
+  "report_path": "docs/decisions/2025-11-01-draft-story-approval.md",
+  "screenshots": []
+}

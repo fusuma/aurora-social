@@ -1,0 +1,7 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+  # Exclude build outputs
+  - '!**/node_modules'
+  - '!**/.next'
+  - '!**/dist'

@@ -1,0 +1,4 @@
+nomeCompleto,cpf,dataNascimento,sexo,nomeMae,nis,rg,tituloEleitor,carteiraTrabalho,endereco,rendaFamiliarTotal,ehResponsavel
+João da Silva,12345678901,1985-05-15,MASCULINO,Maria da Silva,10987654321,MG1234567,123456789012,1234567,Rua das Flores 123 Centro,1500.00,SIM
+Maria Santos,98765432100,1990-03-20,FEMININO,Ana Santos,10987654322,MG2345678,223456789012,2234567,Rua das Acácias 456 Bairro Novo,2200.50,SIM
+Pedro Oliveira,11122233344,1978-11-30,MASCULINO,Josefa Oliveira,10987654323,MG3456789,323456789012,3234567,Av Principal 789 Centro,1800.00,SIM

@@ -1,0 +1,32 @@
+{
+  "operation": "commit",
+  "epic_id": "epic-2",
+  "story_id": "story-2.5",
+  "date": "2025-11-01",
+  "started_at": "2025-11-01T11:00:00Z",
+  "completed_at": "2025-11-01T11:05:00Z",
+  "duration_minutes": 5,
+  "agent": "git-specialist",
+  "status": "success",
+  "commit_info": {
+    "hash": "9edad28",
+    "message": "feat(epic-2): implement atendimento modal with form validation",
+    "type": "feat",
+    "scope": "epic-2",
+    "files_changed": 4,
+    "insertions": 487,
+    "deletions": 29,
+    "stories": ["story-2.5"],
+    "co_authors": ["dev"],
+    "issues_closed": [],
+    "files_modified": [
+      "apps/aurorasocial/src/components/modules/citizens/AtendimentoModal.tsx",
+      "apps/aurorasocial/src/server/routers/citizens.ts",
+      "apps/aurorasocial/src/app/(auth)/perfil/[id]/page.tsx",
+      "apps/aurorasocial/src/components/modules/citizens/AtendimentoHistoryList.tsx"
+    ],
+    "dependencies": ["story-2.1", "story-2.3"],
+    "acceptance_criteria": "5/5 satisfied",
+    "review_status": "pass"
+  }
+}

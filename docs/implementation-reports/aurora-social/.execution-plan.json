@@ -1,0 +1,495 @@
+{
+  "epic_id": "aurora-social",
+  "epic_title": "Aurora Social - Municipal Social Assistance Platform",
+  "generated_at": "2025-11-01T00:00:00Z",
+  "agent": "story-sequencer",
+  "total_stories": 17,
+  "completed_stories": 0,
+  "ready_stories": 3,
+  "blocked_stories": 14,
+
+  "timeline": {
+    "estimated_total_hours_sequential": 75,
+    "estimated_total_hours_parallel": 68,
+    "critical_path_hours": 51,
+    "parallel_savings_hours": 7,
+    "estimated_days": 10
+  },
+
+  "execution_sequence": [
+    {
+      "batch_id": 1,
+      "batch_name": "Batch 1 - Foundation Layer",
+      "parallel_execution": true,
+      "estimated_hours": 14,
+      "stories": [
+        {
+          "story_id": "story-1.1",
+          "story_slug": "s1.1-technical-foundation",
+          "title": "Configuração da Fundação Técnica (Enabler)",
+          "file_path": "/Users/fusuma/dev/AuroraSocial/docs/stories/story-1.1.md",
+          "status": "not_started",
+          "approval_status": "draft",
+          "dependencies": [],
+          "blocks": ["story-1.2", "story-1.3", "story-2.1"],
+          "acceptance_criteria_count": 6,
+          "tasks_count": 5,
+          "estimated_hours": 7,
+          "complexity": "high",
+          "priority": "critical",
+          "ready_to_start": true,
+          "execute_first": true,
+          "notes": "SPOF - blocks all other stories"
+        },
+        {
+          "story_id": "story-1.2",
+          "story_slug": "s1.2-login-screen",
+          "title": "Implementação da Tela de Login",
+          "file_path": "/Users/fusuma/dev/AuroraSocial/docs/stories/story-1.2.md",
+          "status": "not_started",
+          "approval_status": "draft",
+          "dependencies": ["story-1.1"],
+          "blocks": ["story-1.3"],
+          "acceptance_criteria_count": 5,
+          "tasks_count": 5,
+          "estimated_hours": 3.5,
+          "complexity": "medium",
+          "priority": "high",
+          "ready_to_start": false,
+          "parallel_with": ["story-2.1"],
+          "notes": "Can run parallel with 2.1 after 1.1"
+        },
+        {
+          "story_id": "story-2.1",
+          "story_slug": "s2.1-citizen-data-model",
+          "title": "Modelagem de Dados do Cidadão (Enabler)",
+          "file_path": "/Users/fusuma/dev/AuroraSocial/docs/stories/story-2.1.md",
+          "status": "not_started",
+          "approval_status": "draft",
+          "dependencies": ["story-1.1"],
+          "blocks": ["story-2.2", "story-2.3", "story-2.4", "story-2.5", "story-2.6", "story-2.7", "story-3.1"],
+          "acceptance_criteria_count": 5,
+          "tasks_count": 7,
+          "estimated_hours": 3.5,
+          "complexity": "medium",
+          "priority": "critical",
+          "ready_to_start": false,
+          "parallel_with": ["story-1.2"],
+          "notes": "Critical enabler for all citizen features"
+        }
+      ]
+    },
+    {
+      "batch_id": 2,
+      "batch_name": "Batch 2 - Authentication & Authorization",
+      "parallel_execution": false,
+      "estimated_hours": 4.5,
+      "stories": [
+        {
+          "story_id": "story-1.3",
+          "story_slug": "s1.3-rbac-route-protection",
+          "title": "Estabelecimento de Papéis (Roles) e Proteção de Rotas",
+          "file_path": "/Users/fusuma/dev/AuroraSocial/docs/stories/story-1.3.md",
+          "status": "not_started",
+          "approval_status": "draft",
+          "dependencies": ["story-1.1", "story-1.2"],
+          "blocks": ["story-1.4", "story-2.2", "story-2.7", "story-3.1", "story-3.2", "story-3.4"],
+          "acceptance_criteria_count": 4,
+          "tasks_count": 5,
+          "estimated_hours": 4.5,
+          "complexity": "medium",
+          "priority": "critical",
+          "ready_to_start": false,
+          "notes": "Security foundation - blocks all protected features"
+        }
+      ]
+    },
+    {
+      "batch_id": 3,
+      "batch_name": "Batch 3 - User Management",
+      "parallel_execution": false,
+      "estimated_hours": 9.5,
+      "stories": [
+        {
+          "story_id": "story-1.4",
+          "story_slug": "s1.4-user-management-view",
+          "title": "Visualização da Página de Gestão de Usuários",
+          "file_path": "/Users/fusuma/dev/AuroraSocial/docs/stories/story-1.4.md",
+          "status": "not_started",
+          "approval_status": "draft",
+          "dependencies": ["story-1.3"],
+          "blocks": ["story-1.5", "story-1.6"],
+          "acceptance_criteria_count": 5,
+          "tasks_count": 5,
+          "estimated_hours": 3.5,
+          "complexity": "medium",
+          "priority": "high",
+          "ready_to_start": false
+        },
+        {
+          "story_id": "story-1.5",
+          "story_slug": "s1.5-invite-user",
+          "title": "Convidar Novo Usuário (Técnico)",
+          "file_path": "/Users/fusuma/dev/AuroraSocial/docs/stories/story-1.5.md",
+          "status": "not_started",
+          "approval_status": "draft",
+          "dependencies": ["story-1.4"],
+          "blocks": ["story-1.6"],
+          "acceptance_criteria_count": 4,
+          "tasks_count": 5,
+          "estimated_hours": 3.5,
+          "complexity": "medium",
+          "priority": "medium",
+          "ready_to_start": false
+        },
+        {
+          "story_id": "story-1.6",
+          "story_slug": "s1.6-deactivate-user",
+          "title": "Desativar Usuário (Técnico)",
+          "file_path": "/Users/fusuma/dev/AuroraSocial/docs/stories/story-1.6.md",
+          "status": "not_started",
+          "approval_status": "draft",
+          "dependencies": ["story-1.4", "story-1.5"],
+          "blocks": [],
+          "acceptance_criteria_count": 4,
+          "tasks_count": 6,
+          "estimated_hours": 2.5,
+          "complexity": "medium",
+          "priority": "medium",
+          "ready_to_start": false
+        }
+      ]
+    },
+    {
+      "batch_id": 4,
+      "batch_name": "Batch 4 - Citizen Search & Profile View",
+      "parallel_execution": false,
+      "estimated_hours": 7,
+      "stories": [
+        {
+          "story_id": "story-2.2",
+          "story_slug": "s2.2-citizen-search",
+          "title": "Implementação da Tela de Pesquisa de Cidadão",
+          "file_path": "/Users/fusuma/dev/AuroraSocial/docs/stories/story-2.2.md",
+          "status": "not_started",
+          "approval_status": "draft",
+          "dependencies": ["story-1.3", "story-2.1"],
+          "blocks": ["story-2.3", "story-2.4"],
+          "acceptance_criteria_count": 7,
+          "tasks_count": 7,
+          "estimated_hours": 3.5,
+          "complexity": "medium",
+          "priority": "high",
+          "ready_to_start": false
+        },
+        {
+          "story_id": "story-2.3",
+          "story_slug": "s2.3-profile-view",
+          "title": "Implementação da Tela de Visualização de Perfil",
+          "file_path": "/Users/fusuma/dev/AuroraSocial/docs/stories/story-2.3.md",
+          "status": "not_started",
+          "approval_status": "draft",
+          "dependencies": ["story-2.2"],
+          "blocks": ["story-2.4", "story-2.5", "story-2.6"],
+          "acceptance_criteria_count": 6,
+          "tasks_count": 8,
+          "estimated_hours": 3.5,
+          "complexity": "medium",
+          "priority": "high",
+          "ready_to_start": false
+        }
+      ]
+    },
+    {
+      "batch_id": 5,
+      "batch_name": "Batch 5 - Profile Management & Atendimentos",
+      "parallel_execution": true,
+      "estimated_hours": 9,
+      "stories": [
+        {
+          "story_id": "story-2.4",
+          "story_slug": "s2.4-profile-create-edit",
+          "title": "Criação e Edição de Perfil de Cidadão",
+          "file_path": "/Users/fusuma/dev/AuroraSocial/docs/stories/story-2.4.md",
+          "status": "not_started",
+          "approval_status": "draft",
+          "dependencies": ["story-2.2", "story-2.3"],
+          "blocks": ["story-2.5", "story-2.6", "story-2.7"],
+          "acceptance_criteria_count": 7,
+          "tasks_count": 8,
+          "estimated_hours": 4.5,
+          "complexity": "high",
+          "priority": "high",
+          "ready_to_start": false,
+          "execute_first": true,
+          "notes": "Must complete before 2.5 and 2.6"
+        },
+        {
+          "story_id": "story-2.5",
+          "story_slug": "s2.5-atendimento-modal",
+          "title": "Registro de Atendimento (Modal)",
+          "file_path": "/Users/fusuma/dev/AuroraSocial/docs/stories/story-2.5.md",
+          "status": "not_started",
+          "approval_status": "draft",
+          "dependencies": ["story-2.3", "story-2.4"],
+          "blocks": ["story-3.1"],
+          "acceptance_criteria_count": 5,
+          "tasks_count": 7,
+          "estimated_hours": 2.5,
+          "complexity": "medium",
+          "priority": "high",
+          "ready_to_start": false,
+          "parallel_with": ["story-2.6"],
+          "notes": "Can run parallel with 2.6 after 2.4"
+        },
+        {
+          "story_id": "story-2.6",
+          "story_slug": "s2.6-attachments",
+          "title": "Gestão de Anexos (Upload e Visualização)",
+          "file_path": "/Users/fusuma/dev/AuroraSocial/docs/stories/story-2.6.md",
+          "status": "not_started",
+          "approval_status": "draft",
+          "dependencies": ["story-2.3", "story-2.4"],
+          "blocks": [],
+          "acceptance_criteria_count": 7,
+          "tasks_count": 8,
+          "estimated_hours": 2.5,
+          "complexity": "medium",
+          "priority": "medium",
+          "ready_to_start": false,
+          "parallel_with": ["story-2.5"],
+          "notes": "Can run parallel with 2.5 after 2.4"
+        }
+      ]
+    },
+    {
+      "batch_id": 6,
+      "batch_name": "Batch 6 - CSV Import",
+      "parallel_execution": false,
+      "estimated_hours": 4.5,
+      "stories": [
+        {
+          "story_id": "story-2.7",
+          "story_slug": "s2.7-csv-import",
+          "title": "Implementação da Importação de Dados",
+          "file_path": "/Users/fusuma/dev/AuroraSocial/docs/stories/story-2.7.md",
+          "status": "not_started",
+          "approval_status": "draft",
+          "dependencies": ["story-1.3", "story-2.1", "story-2.4"],
+          "blocks": [],
+          "acceptance_criteria_count": 6,
+          "tasks_count": 8,
+          "estimated_hours": 4.5,
+          "complexity": "high",
+          "priority": "medium",
+          "ready_to_start": false,
+          "notes": "Should Have priority"
+        }
+      ]
+    },
+    {
+      "batch_id": 7,
+      "batch_name": "Batch 7 - Reports Foundation",
+      "parallel_execution": false,
+      "estimated_hours": 3.5,
+      "stories": [
+        {
+          "story_id": "story-3.1",
+          "story_slug": "s3.1-reports-api",
+          "title": "Fundação de API para Relatórios (Enabler)",
+          "file_path": "/Users/fusuma/dev/AuroraSocial/docs/stories/story-3.1.md",
+          "status": "not_started",
+          "approval_status": "draft",
+          "dependencies": ["story-1.3", "story-2.1", "story-2.5"],
+          "blocks": ["story-3.2", "story-3.3", "story-3.4"],
+          "acceptance_criteria_count": 7,
+          "tasks_count": 8,
+          "estimated_hours": 3.5,
+          "complexity": "medium",
+          "priority": "high",
+          "ready_to_start": false,
+          "notes": "Critical enabler for all reports"
+        }
+      ]
+    },
+    {
+      "batch_id": 8,
+      "batch_name": "Batch 8 - Reports UI & Dashboard",
+      "parallel_execution": true,
+      "estimated_hours": 5,
+      "stories": [
+        {
+          "story_id": "story-3.2",
+          "story_slug": "s3.2-rma-report-page",
+          "title": "Implementação da Página de Geração de Relatórios (RMA)",
+          "file_path": "/Users/fusuma/dev/AuroraSocial/docs/stories/story-3.2.md",
+          "status": "not_started",
+          "approval_status": "draft",
+          "dependencies": ["story-3.1"],
+          "blocks": ["story-3.3"],
+          "acceptance_criteria_count": 7,
+          "tasks_count": 8,
+          "estimated_hours": 2.5,
+          "complexity": "medium",
+          "priority": "high",
+          "ready_to_start": false,
+          "parallel_with": ["story-3.4"],
+          "notes": "Can run parallel with 3.4"
+        },
+        {
+          "story_id": "story-3.3",
+          "story_slug": "s3.3-pdf-excel-export",
+          "title": "Exportação de Relatórios (PDF e Excel)",
+          "file_path": "/Users/fusuma/dev/AuroraSocial/docs/stories/story-3.3.md",
+          "status": "not_started",
+          "approval_status": "draft",
+          "dependencies": ["story-3.2"],
+          "blocks": [],
+          "acceptance_criteria_count": 6,
+          "tasks_count": 8,
+          "estimated_hours": 2.5,
+          "complexity": "medium",
+          "priority": "high",
+          "ready_to_start": false,
+          "notes": "Execute after 3.2"
+        },
+        {
+          "story_id": "story-3.4",
+          "story_slug": "s3.4-dashboard",
+          "title": "Implementação do Dashboard Gerencial",
+          "file_path": "/Users/fusuma/dev/AuroraSocial/docs/stories/story-3.4.md",
+          "status": "not_started",
+          "approval_status": "draft",
+          "dependencies": ["story-3.1"],
+          "blocks": [],
+          "acceptance_criteria_count": 7,
+          "tasks_count": 9,
+          "estimated_hours": 1.5,
+          "complexity": "low",
+          "priority": "medium",
+          "ready_to_start": false,
+          "parallel_with": ["story-3.2"],
+          "notes": "Should Have priority, can run parallel with 3.2"
+        }
+      ]
+    }
+  ],
+
+  "dependency_graph": {
+    "story-1.1": [],
+    "story-1.2": ["story-1.1"],
+    "story-1.3": ["story-1.1", "story-1.2"],
+    "story-1.4": ["story-1.3"],
+    "story-1.5": ["story-1.4"],
+    "story-1.6": ["story-1.4", "story-1.5"],
+    "story-2.1": ["story-1.1"],
+    "story-2.2": ["story-1.3", "story-2.1"],
+    "story-2.3": ["story-2.2"],
+    "story-2.4": ["story-2.2", "story-2.3"],
+    "story-2.5": ["story-2.3", "story-2.4"],
+    "story-2.6": ["story-2.3", "story-2.4"],
+    "story-2.7": ["story-1.3", "story-2.1", "story-2.4"],
+    "story-3.1": ["story-1.3", "story-2.1", "story-2.5"],
+    "story-3.2": ["story-3.1"],
+    "story-3.3": ["story-3.2"],
+    "story-3.4": ["story-3.1"]
+  },
+
+  "critical_path": [
+    "story-1.1",
+    "story-1.2",
+    "story-1.3",
+    "story-2.2",
+    "story-2.3",
+    "story-2.4",
+    "story-2.5",
+    "story-3.1",
+    "story-3.2",
+    "story-3.3"
+  ],
+
+  "parallel_opportunities": [
+    {
+      "batch": 1,
+      "stories": ["story-1.2", "story-2.1"],
+      "after": "story-1.1",
+      "time_savings_hours": 3.5
+    },
+    {
+      "batch": 5,
+      "stories": ["story-2.5", "story-2.6"],
+      "after": "story-2.4",
+      "time_savings_hours": 2.5
+    },
+    {
+      "batch": 8,
+      "stories": ["story-3.2", "story-3.4"],
+      "after": "story-3.1",
+      "time_savings_hours": 1.5
+    }
+  ],
+
+  "risks": [
+    {
+      "type": "spof",
+      "severity": "critical",
+      "story_id": "story-1.1",
+      "description": "Story 1.1 blocks all other stories - single point of failure"
+    },
+    {
+      "type": "enabler",
+      "severity": "critical",
+      "story_id": "story-2.1",
+      "description": "Data model enabler - schema changes after migration are costly"
+    },
+    {
+      "type": "security",
+      "severity": "high",
+      "story_id": "all",
+      "description": "Multi-tenant isolation (tenantId) must be validated in every story"
+    },
+    {
+      "type": "external_dependency",
+      "severity": "medium",
+      "story_id": "story-2.6",
+      "description": "Vercel Blob external service dependency"
+    },
+    {
+      "type": "performance",
+      "severity": "medium",
+      "story_id": "story-2.7",
+      "description": "CSV import with large datasets (>1000 records) could timeout"
+    },
+    {
+      "type": "performance",
+      "severity": "medium",
+      "story_id": "story-3.1",
+      "description": "Report aggregation queries could be slow with large datasets"
+    }
+  ],
+
+  "warnings": [
+    {
+      "type": "accessibility",
+      "severity": "medium",
+      "story_ids": ["story-1.2", "story-1.4", "story-2.2", "story-2.3", "story-3.2", "story-3.4"],
+      "description": "WCAG AA compliance required - can be overlooked in fast implementation"
+    },
+    {
+      "type": "session_dependency",
+      "severity": "medium",
+      "story_ids": ["story-1.2", "story-1.3"],
+      "description": "Auth.js session bugs would impact all subsequent features"
+    }
+  ],
+
+  "validation": {
+    "all_stories_read": true,
+    "no_circular_dependencies": true,
+    "all_dependencies_exist": true,
+    "execution_order_valid": true,
+    "critical_path_identified": true,
+    "parallel_opportunities_identified": true,
+    "risks_documented": true
+  }
+}

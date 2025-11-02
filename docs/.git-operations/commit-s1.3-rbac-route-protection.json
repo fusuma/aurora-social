@@ -1,0 +1,92 @@
+{
+  "operation": "commit",
+  "epic_id": "epic-001",
+  "story_id": "story-1.3",
+  "date": "2025-11-01",
+  "started_at": "2025-11-01T04:24:30Z",
+  "completed_at": "2025-11-01T04:24:45Z",
+  "duration_minutes": 0.25,
+  "agent": "git-specialist",
+  "status": "success",
+
+  "commit_info": {
+    "hash": "b6ddee6eadd6c00d32f5d8511766f4f8ac772d81",
+    "short_hash": "b6ddee6",
+    "message": "feat(auth): implement RBAC and route protection with defense-in-depth",
+    "type": "feat",
+    "scope": "auth",
+    "files_changed": 12,
+    "insertions": 740,
+    "deletions": 80,
+    "stories": ["story-1.3"],
+    "co_authors": ["dev"],
+    "issues_closed": ["1.3"],
+    "files_modified": [
+      "apps/aurorasocial/src/app/page.tsx"
+    ],
+    "files_created": [
+      "apps/aurorasocial/middleware.ts",
+      "apps/aurorasocial/src/app/(auth)/(gestor)/dashboard/page.tsx",
+      "apps/aurorasocial/src/app/(auth)/(gestor)/layout.tsx",
+      "apps/aurorasocial/src/app/(auth)/(tecnico)/layout.tsx",
+      "apps/aurorasocial/src/app/(auth)/(tecnico)/pesquisar/page.tsx",
+      "apps/aurorasocial/src/app/(auth)/layout.tsx",
+      "apps/aurorasocial/src/components/modules/auth/AccessDenied.tsx",
+      "apps/aurorasocial/src/lib/__tests__/auth-procedures.test.ts",
+      "apps/aurorasocial/src/server/auth-procedures.ts"
+    ],
+    "documentation": [
+      "docs/implementation-reports/aurora-social/.status/s1.3-rbac-route-protection.json",
+      "docs/implementation-reports/aurora-social/2025-11-01-s1.3-rbac-route-protection-completion.md"
+    ]
+  },
+
+  "story_context": {
+    "title": "RBAC & Route Protection",
+    "acceptance_criteria_satisfied": 4,
+    "acceptance_criteria_total": 4,
+    "tasks_completed": 5,
+    "tasks_total": 5,
+    "test_results": {
+      "total_tests": 40,
+      "new_tests": 18,
+      "passing": 40,
+      "status": "all_passing"
+    },
+    "review_outcome": "pass",
+    "security_implementation": "three-layer defense-in-depth",
+    "layers": [
+      "middleware (edge runtime)",
+      "layout guards (server components)",
+      "tRPC procedures (API protection)"
+    ]
+  },
+
+  "semantic_commit_details": {
+    "conventional_commits_compliant": true,
+    "breaking_changes": false,
+    "security_critical": true,
+    "body_sections": [
+      "middleware layer implementation",
+      "layout guards implementation",
+      "tRPC API protection",
+      "testing coverage",
+      "architecture highlights"
+    ],
+    "footer": "Closes #1.3"
+  },
+
+  "repository_health": {
+    "clean_working_directory": false,
+    "uncommitted_files": [
+      "docs/.artifact-index.jsonl",
+      "docs/.git-operations/",
+      "docs/decisions/",
+      "docs/stories/"
+    ],
+    "conflicts": false,
+    "branch": "main",
+    "branch_ahead": 2,
+    "branch_behind": 0
+  }
+}

@@ -1,0 +1,226 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model Municipality {
+  id         String      @id @default(cuid())
+  name       String
+  cnpj       String      @unique
+  createdAt  DateTime    @default(now())
+  users      User[]
+  familias   Familia[]
+  individuos Individuo[]
+}
+
+model User {
+  id            String     @id @default(cuid())
+  tenantId      String
+  email         String     @unique
+  emailVerified DateTime?
+  name          String
+  image         String?
+  role          Role       @default(TECNICO)
+  status        UserStatus @default(ACTIVE)
+  createdAt     DateTime   @default(now())
+
+  tenant       Municipality  @relation(fields: [tenantId], references: [id])
+  accounts     Account[]
+  sessions     Session[]
+  atendimentos Atendimento[]
+
+  @@index([tenantId, role])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum Role {
+  GESTOR
+  TECNICO
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
+
+// ============================================================================
+// CITIZEN DATA MODELS (Story 2.1)
+// CadÚnico-compatible models with multi-tenant isolation
+// ============================================================================
+
+// Familia Model
+model Familia {
+  id                    String   @id @default(cuid())
+  tenantId              String
+  responsavelFamiliarId String
+  endereco              String
+  rendaFamiliarTotal    Decimal? @db.Decimal(10, 2)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  createdBy             String
+
+  tenant      Municipality         @relation(fields: [tenantId], references: [id])
+  responsavel Individuo            @relation("ResponsavelFamiliar", fields: [responsavelFamiliarId], references: [id])
+  membros     ComposicaoFamiliar[]
+  anexos      Anexo[]
+
+  @@index([tenantId])
+  @@index([tenantId, responsavelFamiliarId])
+}
+
+// Individuo Model (CadÚnico compatible)
+model Individuo {
+  id             String   @id @default(cuid())
+  tenantId       String
+  nomeCompleto   String
+  cpf            String
+  dataNascimento DateTime
+  sexo           Sexo
+  nomeMae        String?
+  nis            String? // CadÚnico NIS number
+
+  // CadÚnico fields
+  rg               String?
+  tituloEleitor    String?
+  carteiraTrabalho String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String
+
+  tenant              Municipality         @relation(fields: [tenantId], references: [id])
+  familiasResponsavel Familia[]            @relation("ResponsavelFamiliar")
+  familias            ComposicaoFamiliar[]
+  atendimentos        Atendimento[]
+  anexos              Anexo[]
+
+  @@unique([tenantId, cpf])
+  @@index([tenantId])
+  @@index([tenantId, nomeCompleto])
+}
+
+enum Sexo {
+  MASCULINO
+  FEMININO
+  OUTRO
+}
+
+// ComposicaoFamiliar (Junction Table)
+model ComposicaoFamiliar {
+  id          String     @id @default(cuid())
+  familiaId   String
+  individuoId String
+  parentesco  Parentesco
+
+  familia   Familia   @relation(fields: [familiaId], references: [id], onDelete: Cascade)
+  individuo Individuo @relation(fields: [individuoId], references: [id], onDelete: Cascade)
+
+  @@unique([familiaId, individuoId])
+}
+
+enum Parentesco {
+  RESPONSAVEL
+  CONJUGE
+  FILHO
+  ENTEADO
+  NETO
+  PAI_MAE
+  SOGRO_SOGRA
+  IRMAO_IRMA
+  GENRO_NORA
+  OUTRO
+}
+
+// Atendimento Model
+model Atendimento {
+  id             String      @id @default(cuid())
+  tenantId       String
+  individuoId    String
+  userId         String
+  data           DateTime    @default(now())
+  tipoDemanda    TipoDemanda
+  encaminhamento String      @db.Text
+  parecerSocial  String      @db.Text
+
+  individuo Individuo @relation(fields: [individuoId], references: [id], onDelete: Cascade)
+  usuario   User      @relation(fields: [userId], references: [id])
+
+  @@index([tenantId, data])
+  @@index([tenantId, individuoId])
+}
+
+enum TipoDemanda {
+  BENEFICIO_EVENTUAL
+  CADASTRO_UNICO
+  BPC
+  BOLSA_FAMILIA
+  ORIENTACAO_SOCIAL
+  ENCAMINHAMENTO_SAUDE
+  ENCAMINHAMENTO_EDUCACAO
+  VIOLACAO_DIREITOS
+  OUTRO
+}
+
+// Anexo Model (File Attachments)
+model Anexo {
+  id         String   @id @default(cuid())
+  tenantId   String
+  blobUrl    String // Vercel Blob URL
+  fileName   String
+  fileSize   Int // Bytes
+  mimeType   String // image/jpeg, application/pdf
+  uploadedAt DateTime @default(now())
+  uploadedBy String // User FK
+
+  // Polymorphic relations
+  familiaId   String?
+  individuoId String?
+
+  familia   Familia?   @relation(fields: [familiaId], references: [id], onDelete: Cascade)
+  individuo Individuo? @relation(fields: [individuoId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}

@@ -1,0 +1,32 @@
+{
+  "operation": "commit",
+  "epic_id": "epic-1",
+  "story_id": "s1.5",
+  "date": "2025-11-01",
+  "started_at": "2025-11-01T04:43:00Z",
+  "completed_at": "2025-11-01T04:43:05Z",
+  "duration_minutes": 0.08,
+  "agent": "git-specialist",
+  "status": "success",
+  "commit_info": {
+    "hash": "57c3ed474317f8234314cfc239815d48acec099f",
+    "message": "feat(epic-1): implement GESTOR-only user invitation with email and magic link",
+    "type": "feat",
+    "scope": "epic-1",
+    "files_changed": 9,
+    "insertions": 1024,
+    "deletions": 9,
+    "stories": ["s1.5"],
+    "co_authors": ["dev"],
+    "issues_closed": []
+  },
+  "repository_health": {
+    "clean_working_directory": false,
+    "conflicts": false,
+    "large_files": [],
+    "branch_ahead": 6,
+    "branch_behind": 0,
+    "last_commit": "57c3ed474317f8234314cfc239815d48acec099f",
+    "uncommitted_count": 3
+  }
+}
